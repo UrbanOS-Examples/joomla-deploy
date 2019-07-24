@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ template "scos-joomla.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    component: {{ template "scos-joomla.fullname" . }}
+spec:
+  selector:
+    matchLabels:
+      component: {{ template "scos-joomla.fullname" . }}
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        component: {{ template "scos-joomla.fullname" . }}
+        app.kubernetes.io/name: {{ include "scos-joomla.name" . }}
+        helm.sh/chart: {{ include "scos-joomla.chart" . }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+        app.kubernetes.io/managed-by: {{ .Release.Service }}
+    spec:
+      containers:
+      - name: joomla
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        ports:
+        - containerPort: 80
+          name: http
+        volumeMounts:
+        - mountPath: /var/www/html
+          name: joomla-data
+      volumes:
+      - name: joomla-data
+        persistentVolumeClaim:
+          claimName: {{ template "scos-joomla.fullname" . }}-storage

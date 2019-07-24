@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "scos-joomla.fullname" . }}
+  labels:
+    app.kubernetes.io/name: {{ include "scos-joomla.name" . }}
+    helm.sh/chart: {{ include "scos-joomla.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/name: {{ include "scos-joomla.name" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}

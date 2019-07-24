@@ -1,0 +1,27 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: joomla-backup
+spec:
+  schedule: "0 0 */1 * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: Never
+          containers:
+          - name: callout
+            image: buildpack-deps:curl
+            args:
+            - /bin/sh
+            - -ec
+            - curl -L --max-redirs 1000 "https://www.{{ .Values.ingress.root_dns_zone }}/index.php?option=com_akeeba&view=backup&key=$BACKUP_KEY"
+            env:
+            - name: BACKUP_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: joomla-backup-key
+                  key: key
