@@ -1,0 +1,12 @@
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: {{ template "scos-joomla.fullname" . }}-storage
+  namespace: {{ .Release.Namespace }}
+spec:
+  storageClassName: standard-ssd
+  accessModes:
+  - {{ .Values.storage.mode }}
+  resources:
+    requests:
+      storage: {{ .Values.storage.size }}
