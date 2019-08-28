@@ -18,6 +18,7 @@ node('master') {
         """
         sh """
             zap-full-scan.py \
+            -d \
             -t https://www.smartcolumbusos.com \
             -c zap.conf
         """
