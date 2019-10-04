@@ -28,6 +28,10 @@ node ('infrastructure') {
             deployTo(environment: 'dev', extraArgs: '--set image.tag=${env.DEV_IMAGE_TAG} --set image.pullPolicy=Always --recreate-pods')
         }
 
+        doStageIfMergedToMaster('Process Dev job') {
+            scos.devDeployTrigger("joomla-docker")
+        }
+
         doStageIfMergedToMaster('Deploy to Staging')  {
             deployTo(environment: 'staging')
             scos.applyAndPushGitHubTag('staging')
