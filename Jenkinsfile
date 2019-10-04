@@ -7,24 +7,32 @@ library(
 
 properties([
     pipelineTriggers([scos.dailyBuildTrigger()]),
+    parameters([
+        booleanParam(defaultValue: false, description: 'Deploy to development environment?', name: 'DEV_DEPLOYMENT'),
+        string(defaultValue: 'development', description: 'Image tag to deploy to dev environment', name: 'DEV_IMAGE_TAG')
+    ])
 ])
 
 def image
 def doStageIf = scos.&doStageIf
+def doStageIfDeployingToDev = doStageIf.curry(env.DEV_DEPLOYMENT == "true")
+def doStageIfMergedToMaster = doStageIf.curry(scos.changeset.isMaster && env.DEV_DEPLOYMENT == "false")
 def doStageIfRelease = doStageIf.curry(scos.changeset.isRelease)
-def doStageUnlessRelease = doStageIf.curry(!scos.changeset.isRelease)
-def doStageIfPromoted = doStageIf.curry(scos.changeset.isMaster)
 
 node ('infrastructure') {
     ansiColor('xterm') {
         scos.doCheckoutStage()
 
 
-        doStageUnlessRelease('Deploy to Dev') {
-            deployTo(environment: 'dev', extraArgs: '--set image.tag=development --set image.pullPolicy=Always --recreate-pods')
+        doStageIfDeployingToDev('Deploy to Dev') {
+            deployTo(environment: 'dev', extraArgs: '--set image.tag=${env.DEV_IMAGE_TAG} --set image.pullPolicy=Always --recreate-pods')
         }
 
-        doStageIfPromoted('Deploy to Staging')  {
+        doStageIfMergedToMaster('Process Dev job') {
+            scos.devDeployTrigger("joomla-docker")
+        }
+
+        doStageIfMergedToMaster('Deploy to Staging')  {
             deployTo(environment: 'staging')
             scos.applyAndPushGitHubTag('staging')
         }
