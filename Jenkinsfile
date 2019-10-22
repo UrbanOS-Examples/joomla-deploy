@@ -25,7 +25,7 @@ node ('infrastructure') {
 
 
         doStageIfDeployingToDev('Deploy to Dev') {
-            deployTo(environment: 'dev', extraArgs: '--set image.tag=${env.DEV_IMAGE_TAG} --set image.pullPolicy=Always --recreate-pods')
+            deployTo(environment: 'dev', extraArgs: "--set image.tag=${env.DEV_IMAGE_TAG} --set image.pullPolicy=Always --recreate-pods")
         }
 
         doStageIfMergedToMaster('Process Dev job') {
