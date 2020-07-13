@@ -18,7 +18,7 @@ spec:
             args:
             - /bin/sh
             - -ec
-            - curl -L --max-redirs 1000 "https://www.{{ .Values.ingress.root_dns_zone }}/index.php?option=com_akeeba&view=backup&key=$BACKUP_KEY"
+            - curl -L --max-redirs 1000 "https://www.{{ .Values.ingress.root.dns_zone }}/index.php?option=com_akeeba&view=backup&key=$BACKUP_KEY"
             env:
             - name: BACKUP_KEY
               valueFrom:
