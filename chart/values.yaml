@@ -29,11 +29,11 @@ ingress:
   security_groups: ""
   root:
     enabled: true
-    root_dns_zone: ""
+    dns_zone: ""
     certificate_arns: ""
   internal:
     enabled: true
-    root_dns_zone: ""
+    dns_zone: ""
     certificate_arns: ""
 
 resources: {}
