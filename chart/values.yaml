@@ -24,12 +24,17 @@ service:
   type: NodePort
 
 ingress:
-  enabled: true
   scheme: ""
   subnets: ""
   security_groups: ""
-  root_dns_zone: ""
-  certificate_arns: ""
+  root:
+    enabled: true
+    root_dns_zone: ""
+    certificate_arns: ""
+  internal:
+    enabled: true
+    root_dns_zone: ""
+    certificate_arns: ""
 
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious

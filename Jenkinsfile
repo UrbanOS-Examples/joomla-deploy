@@ -52,9 +52,11 @@ def deployTo(params = [:]) {
         def terraformOutputs = scos.terraformOutput(environment)
         def subnets = terraformOutputs.public_subnets.value.join(/\\,/)
         def allowInboundTrafficSG = terraformOutputs.allow_all_security_group.value
-        def certificateARN = terraformOutputs.root_tls_certificate_arn.value
-        def ingressScheme = internal ? 'internal' : 'internet-facing'
+        def rootIngressScheme = internal ? 'internal' : 'internet-facing'
+        def rootCertificateARN = terraformOutputs.root_tls_certificate_arn.value
+        def internalCertificateARN = terraformOutputs.tls_certificate_arn.value
         def rootDnsZone = terraformOutputs.root_dns_zone_name.value
+        def internalDnsZone = terraformOutputs.internal_dns_zone_name.value
 
         sh("""#!/bin/bash
             set -e
@@ -62,12 +64,15 @@ def deployTo(params = [:]) {
             helm upgrade --install scos-joomla ./chart \
                 --namespace=joomla \
                 --values=joomla.yaml \
-                --set ingress.enabled="true" \
-                --set ingress.scheme="${ingressScheme}" \
                 --set ingress.subnets="${subnets}" \
                 --set ingress.security_groups="${allowInboundTrafficSG}" \
-                --set ingress.root_dns_zone="${rootDnsZone}" \
-                --set ingress.certificate_arns="${certificateARN}" \
+                --set ingress.root.enabled="true" \
+                --set ingress.root.scheme="${rootIngressScheme}" \
+                --set ingress.root.dns_zone="${rootDnsZone}" \
+                --set ingress.root.certificate_arns="${rootCertificateARN}" \
+                --set ingress.internal.enabled="true" \
+                --set ingress.internal.dns_zone="${internalDnsZone}" \
+                --set ingress.internal.certificate_arns="${internalCertificateARN}" \
                 ${extraArgs}
         """.trim())
     }
