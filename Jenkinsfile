@@ -57,6 +57,7 @@ def deployTo(params = [:]) {
         def internalCertificateARN = terraformOutputs.tls_certificate_arn.value
         def rootDnsZone = terraformOutputs.root_dns_zone_name.value
         def internalDnsZone = terraformOutputs.internal_dns_zone_name.value
+        def rootWAFACLARN = terraformOutputs.eks_cluster_waf_acl_arn.value
 
         sh("""#!/bin/bash
             set -e
@@ -70,6 +71,7 @@ def deployTo(params = [:]) {
                 --set ingress.root.scheme="${rootIngressScheme}" \
                 --set ingress.root.dns_zone="${rootDnsZone}" \
                 --set ingress.root.certificate_arns="${rootCertificateARN}" \
+                --set ingress.root.waf_acl_arn="${rootWAFACLARN}" \
                 --set ingress.internal.enabled="true" \
                 --set ingress.internal.dns_zone="${internalDnsZone}" \
                 --set ingress.internal.certificate_arns="${internalCertificateARN}" \
