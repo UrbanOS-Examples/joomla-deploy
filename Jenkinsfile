@@ -61,7 +61,6 @@ def deployTo(params = [:]) {
 
         sh("""#!/bin/bash
             set -e
-            helm init --client-only
             helm upgrade --install scos-joomla ./chart \
                 --namespace=joomla \
                 --values=joomla.yaml \
