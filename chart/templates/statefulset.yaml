@@ -6,12 +6,11 @@ metadata:
   labels:
     component: {{ template "scos-joomla.fullname" . }}
 spec:
+  serviceName: {{ template "scos-joomla.fullname" . }}
   selector:
     matchLabels:
       component: {{ template "scos-joomla.fullname" . }}
   replicas: 1
-  strategy:
-    type: RollingUpdate
   template:
     metadata:
       labels:
